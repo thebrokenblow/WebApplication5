@@ -1,0 +1,23 @@
+﻿@using WebApplication5.Models;
+@model Product
+
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-controller="Product" asp-action="Edit">
+            <input type="hidden" asp-for="Id"/>
+            <div class="form-group">
+                <input asp-for="Name" />
+            </div>
+            <div class="form-group">
+                <input asp-for="Category" />
+            </div>
+            <div class="form-group">
+                <input asp-for="Cost" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Отредактировать" />
+            </div>
+        </form>
+    </div>
+</div>

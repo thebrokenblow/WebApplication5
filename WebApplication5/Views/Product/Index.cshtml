@@ -1,0 +1,53 @@
+﻿@using WebApplication5.Models;
+@model List<Product>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Cost
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Category
+                </td>
+                <td>
+                    @item.Cost
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a 
+                       asp-action="Delete" 
+                       asp-route-id="@item.Id" 
+                       asp-route-name="@item.Name"
+                       asp-route-cost="@item.Cost"
+                       asp-route-category="@item.Category">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

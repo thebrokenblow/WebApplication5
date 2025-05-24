@@ -1,0 +1,16 @@
+﻿@model List<Product>
+
+
+@foreach(var product in Model)
+{
+    <div class="card" style="width: 350px">
+        <h5 class="card-title">@product.Name</h5>
+        <h5 class="card-title">@product.Category</h5>
+        <h5 class="card-title">@product.Cost</h5>
+        <a 
+            asp-controller="Home" 
+            asp-action="Details" 
+            asp-route-name="@product.Name"
+            asp-route-category="@product.Category">Перейти</a>
+    </div>        
+}
