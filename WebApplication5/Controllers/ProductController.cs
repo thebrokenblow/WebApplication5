@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApplication5.Extensions;
 using WebApplication5.Models;
 using WebApplication5.Repositories;
 
@@ -63,6 +64,8 @@ public class ProductController(ProductRepository productRepository) : Controller
     {
         productRepository.RemoveById(id);
 
-        return RedirectToAction(nameof(Index), "Product");
+        var controllerName = this.GetControllerName<ProductController>();
+
+        return RedirectToAction(nameof(Index), controllerName);
     }
 }
