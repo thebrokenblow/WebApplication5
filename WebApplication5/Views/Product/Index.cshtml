@@ -1,5 +1,7 @@
 ﻿@using WebApplication5.Models;
-@model List<Product>
+@using WebApplication5.ViewModels
+
+@model ProductFilterViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -7,6 +9,28 @@
 
 <h1>Index</h1>
 
+<form method="get" asp-controller="Product" asp-action="Index">
+    <p>
+        <label>
+            Категории:
+            <select asp-items="@Model.Categories" name="nameCategory">
+                <option value="">--</option>
+            </select>
+        </label>
+
+        <label>
+            Сортировка:
+            <select name="sortedType">
+                <option value="0">--</option>
+                <option value="1">По возрастанию</option>
+                <option value="2">По убыванию</option>
+            </select>
+        </label>
+
+        <label>Название: <input type="text" value="@Model.FilterName" name="productName" /></label>
+        <input type="submit" value="Поиск">
+    </p>
+</form>
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -26,7 +50,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Products)
         {
             <tr>
                 <td>
@@ -40,9 +64,8 @@
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a 
-                       asp-action="Delete" 
-                       asp-route-id="@item.Id" 
+                    <a asp-action="Delete"
+                       asp-route-id="@item.Id"
                        asp-route-name="@item.Name"
                        asp-route-cost="@item.Cost"
                        asp-route-category="@item.Category">Delete</a>
@@ -51,3 +74,21 @@
         }
     </tbody>
 </table>
+
+<a asp-controller="Product"
+   asp-action="Index"
+   asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
+   asp-route-productName="@Model.FilterName"
+   asp-route-nameCategory="@Model.Categories.SelectedValue"
+   asp-route-sortedType="0">
+    Назад
+</a>
+
+<a asp-controller="Product"
+   asp-action="Index"
+   asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
+   asp-route-productName="@Model.FilterName"
+   asp-route-nameCategory="@Model.Categories.Sele"
+   asp-route-sortedType="0">
+    Вперёд
+</a>

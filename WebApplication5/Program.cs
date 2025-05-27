@@ -3,6 +3,8 @@ using WebApplication5.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ProductRepository>();
+builder.Services.AddSingleton<CategoryRepository>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
