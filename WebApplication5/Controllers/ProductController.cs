@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using WebApplication5.Common;
 using WebApplication5.Helpers;
 using WebApplication5.Models;
 using WebApplication5.Repositories;
@@ -13,45 +11,39 @@ public class ProductController(ProductRepository productRepository, CategoryRepo
 {
     private const int pageSize = 20;
 
-    public IActionResult Index(string productName, string nameCategory, SortedType sortedType, int page = 1)
+    public IActionResult Index(ProductFilterViewModel productFilterViewModel)
     {
         var products = productRepository.GetAll();
         var categories = categoryRepository.GetAll();
 
         var filteringProducts = products.AsEnumerable();
 
-        if (!string.IsNullOrEmpty(productName))
+        if (!string.IsNullOrEmpty(productFilterViewModel.ProductName))
         {
-            filteringProducts = filteringProducts.Where(product => product.Name.Contains(productName, StringComparison.CurrentCultureIgnoreCase));
+            filteringProducts = filteringProducts.Where(
+                product => product.Name.Contains(
+                    productFilterViewModel.ProductName, StringComparison.CurrentCultureIgnoreCase));
         }
 
-        if (!string.IsNullOrEmpty(nameCategory))
+        if (!string.IsNullOrEmpty(productFilterViewModel.NameCategory))
         {
-            filteringProducts = filteringProducts.Where(product => product.Category == nameCategory);
+            filteringProducts = filteringProducts.Where(
+                product => product.Category == productFilterViewModel.NameCategory);
         }
 
-        switch (sortedType)
-        {
-            case SortedType.CostAsk:
-                filteringProducts = filteringProducts.OrderBy(product => product.Cost);
-            break;
+        filteringProducts = FilteringProducts(filteringProducts, productFilterViewModel.SortedType);
 
-            case SortedType.CostDesc:
-                filteringProducts = filteringProducts.OrderByDescending(product => product.Cost);
-            break;
-
-            default:
-            break;
-        }
-
-        filteringProducts = filteringProducts.Skip((page - 1) * pageSize).Take(pageSize);
+        var paginationFilteringProducts = filteringProducts.Skip((productFilterViewModel.Page - 1) * pageSize).Take(pageSize);
 
         var currentProductFilterViewModel = new ProductFilterViewModel
         {
             Categories = new SelectList(categories),
-            Products = filteringProducts,
-            FilterName = productName,
-            PageViewModel = new PageViewModel(filteringProducts.Count(), page, pageSize)
+            Products = paginationFilteringProducts,
+            FilterName = productFilterViewModel.ProductName,
+            PageViewModel = new PageViewModel(filteringProducts.Count(), productFilterViewModel.Page, pageSize),
+            NameCategory = productFilterViewModel.NameCategory,
+            SortedType = productFilterViewModel.SortedType,
+            Page = productFilterViewModel.Page
         };
 
         return View(currentProductFilterViewModel);
@@ -116,4 +108,17 @@ public class ProductController(ProductRepository productRepository, CategoryRepo
         var nameController = ControllerHelper.GetName<ProductController>();
         return RedirectToAction(nameof(Index), nameController);
     }
+
+
+    /// <summary>
+    /// Фильтрация Продуктов по значениям SortedType
+    /// </summary>
+    /// <param name="sortedType"></param>
+    /// <returns></returns>
+    private IEnumerable<Product> FilteringProducts(IEnumerable<Product> products, SortedType sortedType) => sortedType switch
+    {
+        SortedType.CostAsk => products.OrderBy(product => product.Cost),
+        SortedType.CostDesc => products.OrderByDescending(product => product.Cost),
+        SortedType.None => products
+    };
 }

@@ -9,25 +9,25 @@
 
 <h1>Index</h1>
 
-<form method="get" asp-controller="Product" asp-action="Index">
+<form asp-controller="Product" asp-action="Index">
     <p>
         <label>
             Категории:
-            <select asp-items="@Model.Categories" name="nameCategory">
+            <select asp-items="@Model.Categories" asp-for="@Model.NameCategory">
                 <option value="">--</option>
             </select>
         </label>
 
         <label>
             Сортировка:
-            <select name="sortedType">
+            <select asp-for="@Model.SortedType">
                 <option value="0">--</option>
                 <option value="1">По возрастанию</option>
                 <option value="2">По убыванию</option>
             </select>
         </label>
 
-        <label>Название: <input type="text" value="@Model.FilterName" name="productName" /></label>
+        <label>Название: <input type="text" asp-for="@Model.ProductName" /></label>
         <input type="submit" value="Поиск">
     </p>
 </form>
@@ -75,20 +75,49 @@
     </tbody>
 </table>
 
-<a asp-controller="Product"
-   asp-action="Index"
-   asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
-   asp-route-productName="@Model.FilterName"
-   asp-route-nameCategory="@Model.Categories.SelectedValue"
-   asp-route-sortedType="0">
-    Назад
-</a>
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(Model.PageViewModel.HasPreviousPage ? string.Empty : "disabled")">
+            <a class="page-link"
+               tabindex="-1"
+               role="button"
+               aria-disabled="@(!Model.PageViewModel.HasPreviousPage)"
+               asp-controller="Product"
+               asp-action="Index"
+               asp-route-page="@(Model.Page - 1)"
+               asp-route-productName="@Model.FilterName"
+               asp-route-nameCategory="@Model.NameCategory"
+               asp-route-sortedType="@Model.SortedType">
+                Назад
+            </a>
+        </li>
 
-<a asp-controller="Product"
-   asp-action="Index"
-   asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
-   asp-route-productName="@Model.FilterName"
-   asp-route-nameCategory="@Model.Categories.Sele"
-   asp-route-sortedType="0">
-    Вперёд
-</a>
+        @for (int pageNumber = 1; pageNumber <= Model.PageViewModel.TotalPage; pageNumber++)
+        {
+            <li class="page-item @(Model.Page == pageNumber ? "active" : string.Empty)">
+                <a class="page-link"
+                   asp-controller="Product"
+                   asp-action="Index"
+                   asp-route-page="@pageNumber"
+                   asp-route-productName="@Model.FilterName"
+                   asp-route-nameCategory="@Model.NameCategory"
+                   asp-route-sortedType="@Model.SortedType">@pageNumber</a>
+            </li>
+        }
+
+        <li class="page-item @(Model.PageViewModel.HasNextPage ? string.Empty : "disabled")">
+            <a class="page-link"
+               tabindex="-1"
+               role="button"
+               aria-disabled="@(!Model.PageViewModel.HasNextPage)"
+               asp-controller="Product"
+               asp-action="Index"
+               asp-route-page="@(Model.Page + 1)"
+               asp-route-productName="@Model.FilterName"
+               asp-route-nameCategory="@Model.NameCategory"
+               asp-route-sortedType="@Model.SortedType">
+                Вперёд
+            </a>
+        </li>
+    </ul>
+</nav>
